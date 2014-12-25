@@ -19,10 +19,10 @@ var sources = {
 
 // ===== JavaScript Optimaize ====== //
 gulp.task("scripts", function () {
-  return gulp.src(["assets/Main.js", "assets/lib/*.js"])
+  return gulp.src(["assets/KoumeGL.js", "assets/lib/*.js", "assets/**/*.js"])
     .pipe(plumber())
-    .pipe(uglify())
-    .pipe(concat("Main.js"))
+    // .pipe(uglify())
+    .pipe(concat("KoumeGL.js"))
     .pipe(gulp.dest(sources.js));
 });
 // ===== JavaScript Optimaize ====== //
