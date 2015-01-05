@@ -10,7 +10,7 @@ var BufferAttribute = function() {
   this._ibo
 
   this._getAttribute;
-  this.getUniform;
+  this._getUniform;
   this._setAttribute;
   this._createVbo;
   this._createIbo;
@@ -27,9 +27,8 @@ BufferAttribute.prototype = {
   //-------------------------------------------------
   _init : function() {
 
-    KoumeGL.gl.bindBuffer(KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo);
-
-    this.getUniform();
+    this._getAttribute();
+    this._getUniform();
     this._bindVbo();
     this._bindIbo();
 
@@ -60,7 +59,7 @@ BufferAttribute.prototype = {
   //-------------------------------------------------
   // get uniformLocation
   //-------------------------------------------------
-  getUniform : function() {
+  _getUniform : function() {
 
     // uniformLocationの取得
     this.uniLocation = [];
@@ -83,13 +82,13 @@ BufferAttribute.prototype = {
     // 引数として受け取った配列を処理する
     for( var i in i_vbo ){
       // バッファをバインドする
-      gl.bindBuffer( gl.ARRAY_BUFFER, i_vbo[i] );
+      KoumeGL.gl.bindBuffer( KoumeGL.gl.ARRAY_BUFFER, i_vbo[i] );
 
       // attributeLocationを有効にする
-      gl.enableVertexAttribArray( i_attL[i] );
+      KoumeGL.gl.enableVertexAttribArray( i_attL[i] );
 
       // attributeLocationを通知し登録する
-      gl.vertexAttribPointer( i_attL[i], i_attS[i], gl.FLOAT, false, 0, 0 );
+      KoumeGL.gl.vertexAttribPointer( i_attL[i], i_attS[i], KoumeGL.gl.FLOAT, false, 0, 0 );
     }
 
   },
@@ -125,13 +124,13 @@ BufferAttribute.prototype = {
     this._ibo = KoumeGL.gl.createBuffer();
 
     // バッファをバインドする
-    KoumeGL.gl.bindBuffer(KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo);
+    KoumeGL.gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo );
 
     // バッファにデータをセット
-    KoumeGL.gl.bufferData(KoumeGL.gl.ELEMENT_ARRAY_BUFFER, new Int16Array( i_data ), KoumeGL.gl.STATIC_DRAW);
+    KoumeGL.gl.bufferData( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, new Int16Array( i_data ), KoumeGL.gl.STATIC_DRAW );
 
     // バッファのバインドを無効化
-    KoumeGL.gl.bindBuffer(KoumeGL.gl.ELEMENT_ARRAY_BUFFER, null);
+    KoumeGL.gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, null );
 
     // 生成したIBOを返して終了
     return this._ibo;
@@ -143,13 +142,19 @@ BufferAttribute.prototype = {
   //-------------------------------------------------
   _bindVbo : function() {
 
-        // VBOのバインドと登録
+    this._attVBO = [];
+    this._attVBO[0] = this._createVbo( MatrixIdentity.vPosition );
+    this._attVBO[1] = this._createVbo( MatrixIdentity.vNormal );
+    this._attVBO[2] = this._createVbo( MatrixIdentity.vColor );
+    this._attVBO[3] = this._createVbo( MatrixIdentity.vTexCoord );
+
+    // VBOのバインドと登録
     this._setAttribute( this._attVBO, this._attLocation, this._attStride);
 
-    // IBOの生成
+    // VBOの生成
     this._vbo = this._createVbo( MatrixIdentity.index );
 
-    // IBOをバインド
+    // VBOをバインド
     KoumeGL.gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo );
 
   },
@@ -158,9 +163,6 @@ BufferAttribute.prototype = {
   // bind IBO
   //-------------------------------------------------
   _bindIbo : function() {
-
-        // IBOのバインドと登録
-    this._setAttribute( this._attVBO, this._attLocation, this._attStride );
 
     // IBOの生成
     this._ibo = this._createIbo( MatrixIdentity.index );
