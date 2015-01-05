@@ -1,4 +1,2 @@
-webgl-lighting
+KoumeGL
 ================
-
-WebGL のライティング
