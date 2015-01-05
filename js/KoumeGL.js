@@ -651,7 +651,10 @@ BufferAttribute.prototype = {
   _init : function() {
 
     KoumeGL.gl.bindBuffer(KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo);
+
     this.getUniform();
+    this._bindVbo();
+    this._bindIbo();
 
   },
 
@@ -720,7 +723,7 @@ BufferAttribute.prototype = {
   _createVbo : function( i_data ) {
 
     // バッファオブジェクトの生成
-    this._vbo = gl.createBuffer();
+    this._vbo = KoumeGL.gl.createBuffer();
 
     // バッファをバインドする
     KoumeGL.gl.bindBuffer( KoumeGL.gl.ARRAY_BUFFER, this._vbo );
@@ -767,10 +770,10 @@ BufferAttribute.prototype = {
     this._setAttribute( this._attVBO, this._attLocation, this._attStride);
 
     // IBOの生成
-    this._ibo = this._createIbo( index );
+    this._vbo = this._createVbo( MatrixIdentity.index );
 
     // IBOをバインド
-    gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo );
+    KoumeGL.gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo );
 
   },
 
@@ -783,10 +786,10 @@ BufferAttribute.prototype = {
     this._setAttribute( this._attVBO, this._attLocation, this._attStride );
 
     // IBOの生成
-    this._ibo = this._createIbo( index );
+    this._ibo = this._createIbo( MatrixIdentity.index );
 
     // IBOをバインド
-    gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo );
+    KoumeGL.gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo );
 
   }
 
@@ -997,32 +1000,6 @@ Stage.prototype = {
 
 
 /*-----------------------------------------------------
-* Stage
------------------------------------------------------*/
-var Lighting = function( i_position ) {
-
-  Lighting._position = i_position
-
-  this._init.apply( this );
-
-}
-Lighting.prototype = {
-
-  //-------------------------------------------------
-  // initialize
-  //-------------------------------------------------
-  _init : function() {
-
-    lightPosition = Lighting._position;
-
-  }
-
-}
-
-
-
-
-/*-----------------------------------------------------
 * Textures
 -----------------------------------------------------*/
 var Textures = function() {
@@ -1085,6 +1062,32 @@ Textures.prototype = {
   }
 
 }
+
+
+/*-----------------------------------------------------
+* Stage
+-----------------------------------------------------*/
+var Lighting = function( i_position ) {
+
+  Lighting._position = i_position
+
+  this._init.apply( this );
+
+}
+Lighting.prototype = {
+
+  //-------------------------------------------------
+  // initialize
+  //-------------------------------------------------
+  _init : function() {
+
+    lightPosition = Lighting._position;
+
+  }
+
+}
+
+
 
 /*-----------------------------------------------------
 * Render
