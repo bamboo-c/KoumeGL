@@ -5,12 +5,12 @@ var BufferAttribute = function() {
 
   this._attLocation;
   this._attStride;
-  this._uniLocation
+  this.uniLocation
   this._vbo
   this._ibo
 
   this._getAttribute;
-  this._getUniform;
+  this.getUniform;
   this._setAttribute;
   this._createVbo;
   this._createIbo;
@@ -18,7 +18,6 @@ var BufferAttribute = function() {
   this._bindIbo;
 
   this._init.apply( this );
-  this.addChild( Stage );
 
 }
 BufferAttribute.prototype = {
@@ -28,7 +27,8 @@ BufferAttribute.prototype = {
   //-------------------------------------------------
   _init : function() {
 
-    KoumeGL.gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+    KoumeGL.gl.bindBuffer(KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo);
+    this.getUniform();
 
   },
 
@@ -39,10 +39,11 @@ BufferAttribute.prototype = {
 
     // attributeLocationの取得
     this._attLocation = [];
-    this._attLocation[0] = KoumeGL.gl.getAttribLocation(Shader.prg, "position");
-    this._attLocation[1] = KoumeGL.gl.getAttribLocation(Shader.prg, "normal");
-    this._attLocation[2] = KoumeGL.gl.getAttribLocation(Shader.prg, "color");
-    this._attLocation[3] = KoumeGL.gl.getAttribLocation(Shader.prg, 'texCoord');
+
+    this._attLocation[0] = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "position");
+    this._attLocation[1] = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "normal");
+    this._attLocation[2] = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "color");
+    this._attLocation[3] = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "texCoord");
 
     // attributeの要素数
     this._attStride = [];
@@ -56,18 +57,18 @@ BufferAttribute.prototype = {
   //-------------------------------------------------
   // get uniformLocation
   //-------------------------------------------------
-  _getUniform : function() {
+  getUniform : function() {
 
     // uniformLocationの取得
-    this._uniLocation = [];
-    this._uniLocation[0] = KoumeGL.gl.getUniformLocation(Shader.prg, "mvpMatrix");
-    this._uniLocation[1] = KoumeGL.gl.getUniformLocation(Shader.prg, "invMatrix");
-    this._uniLocation[2] = KoumeGL.gl.getUniformLocation(Shader.prg, "lightPosition");
-    this._uniLocation[3] = KoumeGL.gl.getUniformLocation(Shader.prg, 'ambientColor');
-    this._uniLocation[4] = KoumeGL.gl.getUniformLocation(Shader.prg, 'eyePosition');
-    this._uniLocation[5] = KoumeGL.gl.getUniformLocation(Shader.prg, 'centerPoint');
-    this._uniLocation[6] = KoumeGL.gl.getUniformLocation(Shader.prg, 'mMatrix');
-    this._uniLocation[7] = KoumeGL.gl.getUniformLocation(Shader.prg, 'textureUnit');
+    this.uniLocation = [];
+    this.uniLocation[0] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "mvpMatrix");
+    this.uniLocation[1] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "invMatrix");
+    this.uniLocation[2] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "lightPosition");
+    this.uniLocation[3] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "ambientColor");
+    this.uniLocation[4] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "eyePosition");
+    this.uniLocation[5] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "centerPoint");
+    this.uniLocation[6] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "mMatrix");
+    this.uniLocation[7] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "textureUnit");
 
   },
 
@@ -159,7 +160,7 @@ BufferAttribute.prototype = {
     this._setAttribute( this._attVBO, this._attLocation, this._attStride );
 
     // IBOの生成
-    ibo = this._createIbo( index );
+    this._ibo = this._createIbo( index );
 
     // IBOをバインド
     gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo );

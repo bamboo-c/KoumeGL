@@ -6,7 +6,6 @@ var Render = function() {
   count = 0;
   this._init.apply( this );
 
-
 }
 Render.prototype = {
 
@@ -69,17 +68,17 @@ Render.prototype = {
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
     // uniformLocationへ座標変換行列を登録
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[0], false, MatrixIdentity.mvpMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[1], false, MatrixIdentity.invMatrix);
-    KoumeGL.gl.uniform3fv(uniLocation[2], lightPosition);
-    KoumeGL.gl.uniform3fv(uniLocation[3], ambientColor);
-    KoumeGL.gl.uniform3fv(uniLocation[4], eyePosition);
-    KoumeGL.gl.uniform3fv(uniLocation[5], centerPoint);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[6], false, MatrixIdentity.mMatrix);
-    KoumeGL.gl.uniform1i(uniLocation[7], 0);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[2], lightPosition);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[3], KoumeGL.stage.ambientColor);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[4], KoumeGL.stage.eyePosition);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[5], KoumeGL.stage.centerPoint);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
+    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 0);
 
     // モデルの描画
-    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
+    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
     // 第二のモデル
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
@@ -90,13 +89,13 @@ Render.prototype = {
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
     // uniformLocationへ座標変換行列を登録
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[0], false, MatrixIdentity.mvpMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[1], false, MatrixIdentity.invMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[6], false, MatrixIdentity.mMatrix);
-    KoumeGL.gl.uniform1i(uniLocation[7], 1);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
+    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 1);
 
     // モデルの描画
-    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
+    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
     // 第三のモデル
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
@@ -107,13 +106,13 @@ Render.prototype = {
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
     // uniformLocationへ座標変換行列を登録
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[0], false, MatrixIdentity.mvpMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[1], false, MatrixIdentity.invMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[6], false, MatrixIdentity.mMatrix);
-    KoumeGL.gl.uniform1i(uniLocation[7], 2);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
+    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 2);
 
     // モデルの描画
-    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
+    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
     // 第四のモデル
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
@@ -124,13 +123,13 @@ Render.prototype = {
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
     // uniformLocationへ座標変換行列を登録
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[0], false, MatrixIdentity.mvpMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[1], false, MatrixIdentity.invMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[6], false, MatrixIdentity.mMatrix);
-    KoumeGL.gl.uniform1i(uniLocation[7], 3);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
+    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 3);
 
     // モデルの描画
-    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
+    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
     // 第五のモデル
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
@@ -141,13 +140,13 @@ Render.prototype = {
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
     // uniformLocationへ座標変換行列を登録
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[0], false, MatrixIdentity.mvpMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[1], false, MatrixIdentity.invMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[6], false, MatrixIdentity.mMatrix);
-    KoumeGL.gl.uniform1i(uniLocation[7], 4);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
+    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 4);
 
     // モデルの描画
-    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
+    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
     // 第六のモデル
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
@@ -158,13 +157,13 @@ Render.prototype = {
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
     // uniformLocationへ座標変換行列を登録
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[0], false, MatrixIdentity.mvpMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[1], false, MatrixIdentity.invMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[6], false, MatrixIdentity.mMatrix);
-    KoumeGL.gl.uniform1i(uniLocation[7], 5);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
+    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 5);
 
     // モデルの描画
-    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
+    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
     // 第七のモデル
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
@@ -175,13 +174,13 @@ Render.prototype = {
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
     // uniformLocationへ座標変換行列を登録
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[0], false, MatrixIdentity.mvpMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[1], false, MatrixIdentity.invMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[6], false, MatrixIdentity.mMatrix);
-    KoumeGL.gl.uniform1i(uniLocation[7], 6);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
+    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 6);
 
     // モデルの描画
-    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
+    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
     // 第八のモデル
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
@@ -192,13 +191,13 @@ Render.prototype = {
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
     // uniformLocationへ座標変換行列を登録
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[0], false, MatrixIdentity.mvpMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[1], false, MatrixIdentity.invMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[6], false, MatrixIdentity.mMatrix);
-    KoumeGL.gl.uniform1i(uniLocation[7], 7);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
+    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 7);
 
     // モデルの描画
-    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
+    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
     // 第九のモデル
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
@@ -209,19 +208,19 @@ Render.prototype = {
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
     // uniformLocationへ座標変換行列を登録
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[0], false, MatrixIdentity.mvpMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[1], false, MatrixIdentity.invMatrix);
-    KoumeGL.gl.uniformMatrix4fv(uniLocation[6], false, MatrixIdentity.mMatrix);
-    KoumeGL.gl.uniform1i(uniLocation[7], 8);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
+    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 8);
 
     // モデルの描画
-    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
+    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
     // コンテキストの再描画
     KoumeGL.gl.flush();
 
     // フラグをチェックしてアニメーション
-    if( run ){ requestAnimationFrame( this._render.bind(this) ); }
+    if( run ){ window.requestAnimationFrame( this._init.bind( this ) ); }
 
   }
 

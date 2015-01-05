@@ -22,7 +22,10 @@ var KoumeGL = {
     MatrixIdentity.init();
 
     // シェーダ
-    KoumeGL._shader = new Shader();
+    KoumeGL.shader = new Shader();
+
+    // Buffer
+    KoumeGL.buffer = new BufferAttribute();
 
     // stage の設定
     KoumeGL._stage();
@@ -37,7 +40,9 @@ var KoumeGL = {
     KoumeGL._texture = new Textures();
 
     // 描画
+    run = true;
     KoumeGL.render = new Render();
+
 
   },
 
@@ -68,7 +73,7 @@ var KoumeGL = {
     var centerPointZ = 0.0;
     var centerPoint = [centerPointX, centerPointY, centerPointZ];
 
-    Stage.init( clearColor, clearDepth, ambientColor, eyePosition, centerPoint );
+    KoumeGL.stage = new Stage( clearColor, clearDepth, ambientColor, eyePosition, centerPoint )
 
   },
 
