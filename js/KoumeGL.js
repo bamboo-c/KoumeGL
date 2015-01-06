@@ -160,9 +160,10 @@ var KoumeGL = {
 
       0 : [
 
-        MatrixIdentity.matrix.rotate(MatrixIdentity.mMatrix, this._rad, [1.0, 1.0, 2.0], MatrixIdentity.mMatrix),
-        MatrixIdentity.matrix.translate(MatrixIdentity.mMatrix, [-2.0, -1.0, -1.0], MatrixIdentity.mMatrix),
-        MatrixIdentity.matrix.rotate(MatrixIdentity.mMatrix, this._rad, [1.0, 2.0, -1.0], MatrixIdentity.mMatrix)
+        MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, [1.0, 1.0, 2.0], MatrixIdentity.mMatrix),
+        MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, [-2.0, -1.0, -1.0], MatrixIdentity.mMatrix),
+        MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, [1.0, 2.0, -1.0], MatrixIdentity.mMatrix)
+
       ],
       1 : {
 
@@ -1218,8 +1219,6 @@ var Render = function( i_data ) {
   this._rad = 0;
   this._src = i_data;
 
-  console.log(MatrixIdentity.matrix.rotate(MatrixIdentity.mMatrix, this._rad, [1.0, 1.0, 2.0], MatrixIdentity.mMatrix));
-
   this._run.apply( this );
 
 }
@@ -1260,10 +1259,7 @@ Render.prototype = {
 
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
 
-    // 位置とかを指定
-    for( var i = KoumeGL.modelLength -1; i >= 0; i-- ) {
-
-    }
+    this._src[0];
 
     MatrixIdentity.matrix.multiply(MatrixIdentity.vpMatrix,MatrixIdentity.mMatrix, MatrixIdentity.mvpMatrix);
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
@@ -1278,7 +1274,6 @@ Render.prototype = {
     KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
   }
-
 
 }
 

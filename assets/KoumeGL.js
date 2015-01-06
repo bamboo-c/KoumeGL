@@ -160,9 +160,10 @@ var KoumeGL = {
 
       0 : [
 
-        MatrixIdentity.matrix.rotate(MatrixIdentity.mMatrix, this._rad, [1.0, 1.0, 2.0], MatrixIdentity.mMatrix),
-        MatrixIdentity.matrix.translate(MatrixIdentity.mMatrix, [-2.0, -1.0, -1.0], MatrixIdentity.mMatrix),
-        MatrixIdentity.matrix.rotate(MatrixIdentity.mMatrix, this._rad, [1.0, 2.0, -1.0], MatrixIdentity.mMatrix)
+        MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, [1.0, 1.0, 2.0], MatrixIdentity.mMatrix),
+        MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, [-2.0, -1.0, -1.0], MatrixIdentity.mMatrix),
+        MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, [1.0, 2.0, -1.0], MatrixIdentity.mMatrix)
+
       ],
       1 : {
 
