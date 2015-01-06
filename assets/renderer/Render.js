@@ -48,7 +48,7 @@ Render.prototype = {
 
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
 
-    for( var i = this._position[i_num].num -1; i >= 0; i-- ) {
+    for( var i = this._position[i_num].digit -1; i >= 0; i-- ) {
 
       if( this._position[i_num].process[this._count2] === "rotate" ) {
 

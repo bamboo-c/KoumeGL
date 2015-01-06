@@ -160,49 +160,49 @@ var KoumeGL = {
 
       0 : {
         // 実行したいプロセスの数
-        num : 3,
+        digit : 3,
         // 実行したいプロセス
         process : ["rotate", "translate", "rotate"],
         // プロセスの値
         val : [[1.0, 1.0, 2.0], [-2.0, -1.0, -1.0], [1.0, 2.0, -1.0]]
       },
       1 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[1.0, 1.0, 0.0], [8.0, 0.0, -3.0], [10.0, 0.0, 1.0]]
       },
       2 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[0.0, 1.0, 0.0], [2.0, -8.0, 0.0], [2.0, 0.0, -2.0]]
       },
       3 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[10.0, 1.0, 2.0], [2.0, 0.0, -1.0], [2.0, 0.0, -2.0]]
       },
       4 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[3.0, 1.0, 0.0], [2.0, 0.0, 12.0], [0.0, -2.0, 0.0]]
       },
       5 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[8.0, 1.0, 5.0], [-2.0, -3.0, -3.0], [1.0, 2.0, -1.0]]
       },
       6 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[10.0, 1.0, -2.0], [2.0, 6.0, -3.0], [10.0, 5.0, 4.0]]
       },
       7 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[3.0, 1.0, 0.0], [2.0, 2.0, -2.0], [1.0, 1.0, 5.0]]
       },
       8 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[3.0, 1.0, 0.0], [1.0, 2.0, -10.0], [3.0, 1.0, 5.0]]
       }
