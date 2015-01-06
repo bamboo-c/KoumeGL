@@ -1,7 +1,10 @@
 /*-----------------------------------------------------
 * Textures
 -----------------------------------------------------*/
-var Textures = function() {
+var Textures = function( i_data, i_length ) {
+
+  this._src = i_data;
+  this._length = i_length;
 
   this._init.apply( this );
 
@@ -13,20 +16,21 @@ Textures.prototype = {
   //-------------------------------------------------
   _init : function() {
 
-    Textures.texture = [];
+    this.texture = [];
+    var constant = 33984;
 
-    // テクスチャ画像の指定
-    this._createTexture('kotori.jpg', 0);
-    this._createTexture('kotori.jpg', 1);
-    this._createTexture('kotori.jpg', 2);
-    this._createTexture('kotori.jpg', 3);
-    this._createTexture('kotori.jpg', 4);
-    this._createTexture('kotori.jpg', 5);
-    this._createTexture('kotori.jpg', 6);
-    this._createTexture('kotori.jpg', 7);
-    this._createTexture('kotori.jpg', 8);
+
+    // テクスチャをアクティブにしてバインド、生成
+    for( var i = this._length - 1; i >= 0; i-- ) {
+
+      KoumeGL.gl.activeTexture( constant + i );
+      KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, this.texture[i] );
+      this._createTexture( this._src[i] , i );
+
+    }
 
   },
+
   //-------------------------------------------------
   // create texture
   //-------------------------------------------------
@@ -41,6 +45,14 @@ Textures.prototype = {
 
       // テクスチャをバインドする
       KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, tex );
+      KoumeGL.gl.texParameteri(gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_WRAP_S, KoumeGL.gl.CLAMP_TO_EDGE);
+      KoumeGL.gl.texParameteri(gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_WRAP_T, KoumeGL.gl.CLAMP_TO_EDGE);
+      KoumeGL.gl.texParameteri(gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_MIN_FILTER, KoumeGL.gl.NEAREST);
+      KoumeGL.gl.texParameteri(gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_MAG_FILTER, KoumeGL.gl.NEAREST);
+      KoumeGL.gl.bindTexture(gl.TEXTURE_2D, null);
+
+      KoumeGL.gl.bindTexture(gl.TEXTURE_2D, texture);
+      KoumeGL.gl.texImage2D(gl.TEXTURE_2D, 0, KoumeGL.gl.RGBA, KoumeGL.gl.RGBA, KoumeGL.gl.UNSIGNED_BYTE, video);
 
       // テクスチャへイメージを適用
       KoumeGL.gl.texImage2D( KoumeGL.gl.TEXTURE_2D, 0, KoumeGL.gl.RGBA, KoumeGL.gl.RGBA, KoumeGL.gl.UNSIGNED_BYTE, img );

@@ -1,3 +1,5 @@
+window.PI = Math.PI / 180;
+
 window.onload = function() { KoumeGL.init() };
 
 var KoumeGL = {
@@ -18,14 +20,19 @@ var KoumeGL = {
     // webglコンテキストを取得
     KoumeGL.gl = KoumeGL.canvas.getContext("webgl") || KoumeGL.canvas.getContext("experimental-webgl");
 
+    // 描画するモデルの数を配列で指定する
+    KoumeGL.model = [ 0,1,2,3,4,5,6,7,8 ];
+    KoumeGL.modelLength = KoumeGL.model.length;
+
     // 行列の初期化とか
     MatrixIdentity.init();
 
+
     // シェーダ
     KoumeGL.shader = new Shader();
-
     // Buffer
     KoumeGL.buffer = new BufferAttribute();
+
 
     // stage の設定
     KoumeGL._stage();
@@ -37,12 +44,11 @@ var KoumeGL = {
     KoumeGL._lighting();
 
     // テクスチャの設定
-    KoumeGL._texture = new Textures();
+    KoumeGL._texture();
 
     // 描画
     run = true;
-    KoumeGL.render = new Render();
-
+    KoumeGL._render();
 
   },
 
@@ -117,7 +123,107 @@ var KoumeGL = {
 
     KoumeGL.lighting = new Lighting( lightPosition );
 
-  }
+  },
 
+  //-------------------------------------------
+  // texture setting
+  //-------------------------------------------
+  _texture : function() {
+
+    var texLength = 1;
+
+    // 指定したいテクスチャを指定する
+    // テクスチャを適用したいモデルを配列でキーに入れとく
+    var tex = {
+      0 : video,
+      1 : video,
+      2 : video,
+      3 : video,
+      4 : video,
+      5 : video,
+      6 : video,
+      7 : video,
+      8 : video
+    };
+
+    KoumeGL.texture = new Textures( tex, texLength );
+
+  },
+
+  //-------------------------------------------
+  // render setting
+  //-------------------------------------------
+  _render : function() {
+
+    // モデルを描画する場所とかアニメーションの位置とか
+    var renderSet = {
+
+      0 : [
+
+        MatrixIdentity.matrix.rotate(MatrixIdentity.mMatrix, this._rad, [1.0, 1.0, 2.0], MatrixIdentity.mMatrix),
+        MatrixIdentity.matrix.translate(MatrixIdentity.mMatrix, [-2.0, -1.0, -1.0], MatrixIdentity.mMatrix),
+        MatrixIdentity.matrix.rotate(MatrixIdentity.mMatrix, this._rad, [1.0, 2.0, -1.0], MatrixIdentity.mMatrix)
+      ],
+      1 : {
+
+        rotate : [1.0, 1.0, 0.0],
+        translate : [8.0, 0.0, -3.0],
+        rotate : [10.0, 0.0, 1.0]
+
+      },
+      2 : {
+
+        rotate : [0.0, 1.0, 0.0],
+        translate : [2.0, -8.0, 0.0],
+        rotate : [2.0, 0.0, -2.0]
+
+      },
+      3 : {
+
+        rotate : [10.0, 1.0, 2.0],
+        translate : [2.0, 0.0, -1.0],
+        rotate : [1.0, 0.0, -12.0]
+
+      },
+      4 : {
+
+        rotate : [3.0, 1.0, 0.0],
+        translate : [2.0, 0.0, 12.0],
+        rotate : [0.0, -2.0, 0.0]
+
+      },
+      5 : {
+
+        rotate : [8.0, 1.0, 5.0],
+        translate : [-2.0, -3.0, -3.0],
+        rotate : [1.0, 2.0, -1.0]
+
+      },
+      6 : {
+
+        rotate : [10.0, 1.0, -2.0],
+        translate : [2.0, 6.0, -3.0],
+        rotate : [10.0, 5.0, 4.0]
+
+      },
+      7 : {
+
+        rotate : [3.0, 1.0, 0.0],
+        translate : [2.0, 2.0, -2.0],
+        rotate : [1.0, 1.0, 5.0]
+
+      },
+      8 : {
+
+        rotate : [3.0, 1.0, 0.0],
+        translate : [1.0, 2.0, -10.0],
+        rotate : [3.0, 1.0, 5.0]
+
+      }
+    }
+
+    KoumeGL.render = new Render( renderSet );
+
+  }
 
 }
