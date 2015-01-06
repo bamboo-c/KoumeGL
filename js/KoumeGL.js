@@ -158,69 +158,55 @@ var KoumeGL = {
     // モデルを描画する場所とかアニメーションの位置とか
     var renderSet = {
 
-      0 : [
-
-        MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, [1.0, 1.0, 2.0], MatrixIdentity.mMatrix),
-        MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, [-2.0, -1.0, -1.0], MatrixIdentity.mMatrix),
-        MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, [1.0, 2.0, -1.0], MatrixIdentity.mMatrix)
-
-      ],
+      0 : {
+        // 実行したいプロセスの数
+        num : 3,
+        // 実行したいプロセス
+        process : ["rotate", "translate", "rotate"],
+        // プロセスの値
+        val : [[1.0, 1.0, 2.0], [-2.0, -1.0, -1.0], [1.0, 2.0, -1.0]]
+      },
       1 : {
-
-        rotate : [1.0, 1.0, 0.0],
-        translate : [8.0, 0.0, -3.0],
-        rotate : [10.0, 0.0, 1.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[1.0, 1.0, 0.0], [8.0, 0.0, -3.0], [10.0, 0.0, 1.0]]
       },
       2 : {
-
-        rotate : [0.0, 1.0, 0.0],
-        translate : [2.0, -8.0, 0.0],
-        rotate : [2.0, 0.0, -2.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[0.0, 1.0, 0.0], [2.0, -8.0, 0.0], [2.0, 0.0, -2.0]]
       },
       3 : {
-
-        rotate : [10.0, 1.0, 2.0],
-        translate : [2.0, 0.0, -1.0],
-        rotate : [1.0, 0.0, -12.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[10.0, 1.0, 2.0], [2.0, 0.0, -1.0], [2.0, 0.0, -2.0]]
       },
       4 : {
-
-        rotate : [3.0, 1.0, 0.0],
-        translate : [2.0, 0.0, 12.0],
-        rotate : [0.0, -2.0, 0.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[3.0, 1.0, 0.0], [2.0, 0.0, 12.0], [0.0, -2.0, 0.0]]
       },
       5 : {
-
-        rotate : [8.0, 1.0, 5.0],
-        translate : [-2.0, -3.0, -3.0],
-        rotate : [1.0, 2.0, -1.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[8.0, 1.0, 5.0], [-2.0, -3.0, -3.0], [1.0, 2.0, -1.0]]
       },
       6 : {
-
-        rotate : [10.0, 1.0, -2.0],
-        translate : [2.0, 6.0, -3.0],
-        rotate : [10.0, 5.0, 4.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[10.0, 1.0, -2.0], [2.0, 6.0, -3.0], [10.0, 5.0, 4.0]]
       },
       7 : {
-
-        rotate : [3.0, 1.0, 0.0],
-        translate : [2.0, 2.0, -2.0],
-        rotate : [1.0, 1.0, 5.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[3.0, 1.0, 0.0], [2.0, 2.0, -2.0], [1.0, 1.0, 5.0]]
       },
       8 : {
-
-        rotate : [3.0, 1.0, 0.0],
-        translate : [1.0, 2.0, -10.0],
-        rotate : [3.0, 1.0, 5.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[3.0, 1.0, 0.0], [1.0, 2.0, -10.0], [3.0, 1.0, 5.0]]
       }
+
     }
 
     KoumeGL.render = new Render( renderSet );
@@ -1033,6 +1019,32 @@ Shader.prototype = {
 
 }
 
+
+/*-----------------------------------------------------
+* Stage
+-----------------------------------------------------*/
+var Lighting = function( i_position ) {
+
+  Lighting._position = i_position
+
+  this._init.apply( this );
+
+}
+Lighting.prototype = {
+
+  //-------------------------------------------------
+  // initialize
+  //-------------------------------------------------
+  _init : function() {
+
+    lightPosition = Lighting._position;
+
+  }
+
+}
+
+
+
 /*-----------------------------------------------------
 * Camera
 -----------------------------------------------------*/
@@ -1069,9 +1081,10 @@ var Stage = function( i_color, i_depth, i_ambient, i_position, i_center ) {
 
   this._color = i_color;
   this._depth = i_depth;
-  this._ambient = i_ambient;
-  this._position = i_position;
-  this._center = i_center;
+
+  this.ambientColor = i_ambient;
+  this.eyePosition = i_position;
+  this.centerPoint = i_center;
 
   this._init.apply( this );
 }
@@ -1080,7 +1093,6 @@ Stage.prototype = {
   // initialize
   //-------------------------------------------------
   _init : function() {
-
 
     // viewport の設定
     KoumeGL.gl.viewport(0, 0, KoumeGL.canvas.width, KoumeGL.canvas.height);
@@ -1093,9 +1105,10 @@ Stage.prototype = {
     KoumeGL.gl.clearColor( this._color[0], this._color[1], this._color[2], this._color[3] );
     KoumeGL.gl.clearDepth( this._depth );
 
-    this.ambientColor = this._ambient;
-    this.eyePosition  = this._position;
-    this.centerPoint  = this._center;
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[3], this.ambientColor);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[4], this.eyePosition);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[5], this.centerPoint);
+
 
     // プロジェクション座標変換行列
     MatrixIdentity.matrix.perspective(45, KoumeGL.canvas.width / KoumeGL.canvas.height, 0.1, 50.0, MatrixIdentity.pMatrix);
@@ -1107,31 +1120,94 @@ Stage.prototype = {
 
 }
 
-
 /*-----------------------------------------------------
-* Stage
+* Render
 -----------------------------------------------------*/
-var Lighting = function( i_position ) {
+var Render = function( i_data ) {
 
-  Lighting._position = i_position
+  this._count = 0;
+  this._count2 = 0;
+  this._rad = 0;
+  this._position = i_data;
 
-  this._init.apply( this );
+  this._run.apply( this );
 
 }
-Lighting.prototype = {
+Render.prototype = {
 
   //-------------------------------------------------
-  // initialize
+  // run
   //-------------------------------------------------
-  _init : function() {
+  _run : function() {
 
-    lightPosition = Lighting._position;
+    // カウンタのインクリメント
+    this._count++;
+
+    // アニメーション用にカウンタからラジアンを計算
+    this._rad = (this._count % 360) * window.PI;
+
+    // canvas の色と深度値を初期化
+    KoumeGL.gl.clear( KoumeGL.gl.COLOR_BUFFER_BIT | KoumeGL.gl.DEPTH_BUFFER_BIT );
+
+    for( var i = KoumeGL.modelLength -1; i >= 0; i-- ) {
+
+        this._bind(i);
+
+    }
+
+    // コンテキストの再描画
+    KoumeGL.gl.flush();
+
+    // フラグをチェックしてアニメーション
+    if( run ){ window.requestAnimationFrame( this._run.bind( this ) ); }
+
+  },
+
+  //-------------------------------------------------
+  // bind
+  //-------------------------------------------------
+  _bind : function( i_num ) {
+
+    MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
+
+    for( var i = this._position[i_num].num -1; i >= 0; i-- ) {
+
+      if( this._position[i_num].process[this._count2] === "rotate" ) {
+
+        console.log("rotate");
+
+        MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
+
+      } else if ( this._position[i_num].process[this._count2] === "translate" ) {
+
+        MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
+
+        console.log("translate");
+
+      }
+
+      this._count2++;
+
+    }
+
+    this._count2 = 0;
+    MatrixIdentity.matrix.multiply(MatrixIdentity.vpMatrix,MatrixIdentity.mMatrix, MatrixIdentity.mvpMatrix);
+    MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
+
+    // uniformLocationへ座標変換行列を登録
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
+
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[2], lightPosition);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
+    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 0);
+
+    // モデルの描画
+    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
   }
 
 }
-
-
 
 
 /*-----------------------------------------------------
@@ -1205,73 +1281,6 @@ Textures.prototype = {
 
     // イメージオブジェクトのソースを指定
     img.src = i_src;
-
-  }
-
-}
-
-/*-----------------------------------------------------
-* Render
------------------------------------------------------*/
-var Render = function( i_data ) {
-
-  this._count = 0;
-  this._rad = 0;
-  this._src = i_data;
-
-  this._run.apply( this );
-
-}
-Render.prototype = {
-
-  //-------------------------------------------------
-  // run
-  //-------------------------------------------------
-  _run : function() {
-
-    // カウンタのインクリメント
-    this._count++;
-
-    // アニメーション用にカウンタからラジアンを計算
-    this._rad = (this._count % 360) * window.PI;
-
-    // canvas の色と深度値を初期化
-    KoumeGL.gl.clear( KoumeGL.gl.COLOR_BUFFER_BIT | KoumeGL.gl.DEPTH_BUFFER_BIT );
-
-    for( var i = KoumeGL.modelLength -1; i >= 0; i-- ) {
-
-        this._bind(i);
-
-    }
-
-    // コンテキストの再描画
-    KoumeGL.gl.flush();
-
-    // フラグをチェックしてアニメーション
-    if( run ){ window.requestAnimationFrame( this._run.bind( this ) ); }
-
-  },
-
-  //-------------------------------------------------
-  // bind
-  //-------------------------------------------------
-  _bind : function( i_num ) {
-
-    MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
-
-    this._src[0];
-
-    MatrixIdentity.matrix.multiply(MatrixIdentity.vpMatrix,MatrixIdentity.mMatrix, MatrixIdentity.mvpMatrix);
-    MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
-
-    // uniformLocationへ座標変換行列を登録
-    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
-    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
-    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
-    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 1);
-
-    // モデルの描画
-    KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
 
   }
 

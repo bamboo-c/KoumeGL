@@ -158,69 +158,55 @@ var KoumeGL = {
     // モデルを描画する場所とかアニメーションの位置とか
     var renderSet = {
 
-      0 : [
-
-        MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, [1.0, 1.0, 2.0], MatrixIdentity.mMatrix),
-        MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, [-2.0, -1.0, -1.0], MatrixIdentity.mMatrix),
-        MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, [1.0, 2.0, -1.0], MatrixIdentity.mMatrix)
-
-      ],
+      0 : {
+        // 実行したいプロセスの数
+        num : 3,
+        // 実行したいプロセス
+        process : ["rotate", "translate", "rotate"],
+        // プロセスの値
+        val : [[1.0, 1.0, 2.0], [-2.0, -1.0, -1.0], [1.0, 2.0, -1.0]]
+      },
       1 : {
-
-        rotate : [1.0, 1.0, 0.0],
-        translate : [8.0, 0.0, -3.0],
-        rotate : [10.0, 0.0, 1.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[1.0, 1.0, 0.0], [8.0, 0.0, -3.0], [10.0, 0.0, 1.0]]
       },
       2 : {
-
-        rotate : [0.0, 1.0, 0.0],
-        translate : [2.0, -8.0, 0.0],
-        rotate : [2.0, 0.0, -2.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[0.0, 1.0, 0.0], [2.0, -8.0, 0.0], [2.0, 0.0, -2.0]]
       },
       3 : {
-
-        rotate : [10.0, 1.0, 2.0],
-        translate : [2.0, 0.0, -1.0],
-        rotate : [1.0, 0.0, -12.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[10.0, 1.0, 2.0], [2.0, 0.0, -1.0], [2.0, 0.0, -2.0]]
       },
       4 : {
-
-        rotate : [3.0, 1.0, 0.0],
-        translate : [2.0, 0.0, 12.0],
-        rotate : [0.0, -2.0, 0.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[3.0, 1.0, 0.0], [2.0, 0.0, 12.0], [0.0, -2.0, 0.0]]
       },
       5 : {
-
-        rotate : [8.0, 1.0, 5.0],
-        translate : [-2.0, -3.0, -3.0],
-        rotate : [1.0, 2.0, -1.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[8.0, 1.0, 5.0], [-2.0, -3.0, -3.0], [1.0, 2.0, -1.0]]
       },
       6 : {
-
-        rotate : [10.0, 1.0, -2.0],
-        translate : [2.0, 6.0, -3.0],
-        rotate : [10.0, 5.0, 4.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[10.0, 1.0, -2.0], [2.0, 6.0, -3.0], [10.0, 5.0, 4.0]]
       },
       7 : {
-
-        rotate : [3.0, 1.0, 0.0],
-        translate : [2.0, 2.0, -2.0],
-        rotate : [1.0, 1.0, 5.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[3.0, 1.0, 0.0], [2.0, 2.0, -2.0], [1.0, 1.0, 5.0]]
       },
       8 : {
-
-        rotate : [3.0, 1.0, 0.0],
-        translate : [1.0, 2.0, -10.0],
-        rotate : [3.0, 1.0, 5.0]
-
+        num : 3,
+        process : ["rotate", "translate", "rotate"],
+        val : [[3.0, 1.0, 0.0], [1.0, 2.0, -10.0], [3.0, 1.0, 5.0]]
       }
+
     }
 
     KoumeGL.render = new Render( renderSet );
