@@ -26,12 +26,10 @@ var KoumeGL = {
     // 行列の初期化とか
     MatrixIdentity.init();
 
-
     // シェーダ
     KoumeGL.shader = new Shader();
     // Buffer
     KoumeGL.buffer = new BufferAttribute();
-
 
     // stage の設定
     KoumeGL._stage();
