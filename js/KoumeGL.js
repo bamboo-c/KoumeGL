@@ -21,8 +21,7 @@ var KoumeGL = {
     KoumeGL.gl = KoumeGL.canvas.getContext("webgl") || KoumeGL.canvas.getContext("experimental-webgl");
 
     // 描画するモデルの数を配列で指定する
-    KoumeGL.model = [ 0,1,2,3,4,5,6,7,8 ];
-    KoumeGL.modelLength = KoumeGL.model.length;
+    KoumeGL.modelLength = 9;
 
     // 行列の初期化とか
     MatrixIdentity.init();
@@ -91,7 +90,7 @@ var KoumeGL = {
     // カメラの位置
     var eyeX = 0.0;
     var eyeY = 0.0;
-    var eyeZ = 20.0;
+    var eyeZ = 100.0;
 
     var eye = [ eyeX, eyeY, eyeZ ];
 
@@ -160,49 +159,49 @@ var KoumeGL = {
 
       0 : {
         // 実行したいプロセスの数
-        num : 3,
+        digit : 3,
         // 実行したいプロセス
         process : ["rotate", "translate", "rotate"],
         // プロセスの値
         val : [[1.0, 1.0, 2.0], [-2.0, -1.0, -1.0], [1.0, 2.0, -1.0]]
       },
       1 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[1.0, 1.0, 0.0], [8.0, 0.0, -3.0], [10.0, 0.0, 1.0]]
       },
       2 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[0.0, 1.0, 0.0], [2.0, -8.0, 0.0], [2.0, 0.0, -2.0]]
       },
       3 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[10.0, 1.0, 2.0], [2.0, 0.0, -1.0], [2.0, 0.0, -2.0]]
       },
       4 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[3.0, 1.0, 0.0], [2.0, 0.0, 12.0], [0.0, -2.0, 0.0]]
       },
       5 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[8.0, 1.0, 5.0], [-2.0, -3.0, -3.0], [1.0, 2.0, -1.0]]
       },
       6 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[10.0, 1.0, -2.0], [2.0, 6.0, -3.0], [10.0, 5.0, 4.0]]
       },
       7 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[3.0, 1.0, 0.0], [2.0, 2.0, -2.0], [1.0, 1.0, 5.0]]
       },
       8 : {
-        num : 3,
+        digit : 3,
         process : ["rotate", "translate", "rotate"],
         val : [[3.0, 1.0, 0.0], [1.0, 2.0, -10.0], [3.0, 1.0, 5.0]]
       }
@@ -1019,32 +1018,6 @@ Shader.prototype = {
 
 }
 
-
-/*-----------------------------------------------------
-* Stage
------------------------------------------------------*/
-var Lighting = function( i_position ) {
-
-  Lighting._position = i_position
-
-  this._init.apply( this );
-
-}
-Lighting.prototype = {
-
-  //-------------------------------------------------
-  // initialize
-  //-------------------------------------------------
-  _init : function() {
-
-    lightPosition = Lighting._position;
-
-  }
-
-}
-
-
-
 /*-----------------------------------------------------
 * Camera
 -----------------------------------------------------*/
@@ -1066,9 +1039,6 @@ Camera.prototype = {
 
     // ビュー座標変換行列
     MatrixIdentity.matrix.lookAt( this._eye, this._center, this._up, MatrixIdentity.vMatrix);
-
-    // カメラとか
-
 
   },
 
@@ -1120,6 +1090,90 @@ Stage.prototype = {
 
 }
 
+
+/*-----------------------------------------------------
+* Stage
+-----------------------------------------------------*/
+var Lighting = function( i_position ) {
+
+  Lighting._position = i_position
+
+  this._init.apply( this );
+
+}
+Lighting.prototype = {
+
+  //-------------------------------------------------
+  // initialize
+  //-------------------------------------------------
+  _init : function() {
+
+    lightPosition = Lighting._position;
+
+  }
+
+}
+
+
+
+
+/*-----------------------------------------------------
+* Textures
+-----------------------------------------------------*/
+var Textures = function( i_data, i_length ) {
+
+  this._src = i_data;
+  this._length = i_length;
+
+  this._init.apply( this );
+
+}
+Textures.prototype = {
+
+  //-------------------------------------------------
+  // initialize
+  //-------------------------------------------------
+  _init : function() {
+
+    this._createTex();
+
+  },
+
+  //-------------------------------------------------
+  // create texture
+  //-------------------------------------------------
+  _createTex : function() {
+
+    var constant = 33984;
+    var tex = KoumeGL.gl.createTexture();
+
+    // テクスチャをアクティブにする
+    for( var i = this._length - 1; i >= 0; i-- ) {
+
+      KoumeGL.gl.activeTexture( constant + i );
+
+    }
+
+    // テクスチャをバインドする
+    for( var i = KoumeGL.modelLength -1; i >= 0; i-- ) {
+
+      KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, tex );
+
+    }
+
+    // テクスチャを適用
+    KoumeGL.gl.pixelStorei( KoumeGL.gl.UNPACK_FLIP_Y_WEBGL, true );
+    KoumeGL.gl.texImage2D( KoumeGL.gl.TEXTURE_2D, 0, KoumeGL.gl.RGBA, KoumeGL.gl.RGBA,KoumeGL.gl.UNSIGNED_BYTE, video );
+
+    KoumeGL.gl.texParameteri( KoumeGL.gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_MAG_FILTER, KoumeGL.gl.LINEAR );
+    KoumeGL.gl.texParameteri( KoumeGL.gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_MIN_FILTER, KoumeGL.gl.LINEAR_MIPMAP_NEAREST );
+    KoumeGL.gl.generateMipmap( KoumeGL.gl.TEXTURE_2D );
+    KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, null );
+
+  }
+
+}
+
 /*-----------------------------------------------------
 * Render
 -----------------------------------------------------*/
@@ -1155,6 +1209,8 @@ Render.prototype = {
 
     }
 
+    KoumeGL._texture();
+
     // コンテキストの再描画
     KoumeGL.gl.flush();
 
@@ -1170,19 +1226,15 @@ Render.prototype = {
 
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
 
-    for( var i = this._position[i_num].num -1; i >= 0; i-- ) {
+    for( var i = this._position[i_num].digit -1; i >= 0; i-- ) {
 
       if( this._position[i_num].process[this._count2] === "rotate" ) {
-
-        console.log("rotate");
 
         MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
 
       } else if ( this._position[i_num].process[this._count2] === "translate" ) {
 
         MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
-
-        console.log("translate");
 
       }
 
@@ -1191,6 +1243,7 @@ Render.prototype = {
     }
 
     this._count2 = 0;
+
     MatrixIdentity.matrix.multiply(MatrixIdentity.vpMatrix,MatrixIdentity.mMatrix, MatrixIdentity.mvpMatrix);
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
@@ -1204,83 +1257,6 @@ Render.prototype = {
 
     // モデルの描画
     KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
-
-  }
-
-}
-
-
-/*-----------------------------------------------------
-* Textures
------------------------------------------------------*/
-var Textures = function( i_data, i_length ) {
-
-  this._src = i_data;
-  this._length = i_length;
-
-  this._init.apply( this );
-
-}
-Textures.prototype = {
-
-  //-------------------------------------------------
-  // initialize
-  //-------------------------------------------------
-  _init : function() {
-
-    this.texture = [];
-    var constant = 33984;
-
-
-    // テクスチャをアクティブにしてバインド、生成
-    for( var i = this._length - 1; i >= 0; i-- ) {
-
-      KoumeGL.gl.activeTexture( constant + i );
-      KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, this.texture[i] );
-      this._createTexture( this._src[i] , i );
-
-    }
-
-  },
-
-  //-------------------------------------------------
-  // create texture
-  //-------------------------------------------------
-  _createTexture : function( i_src, i_num ){
-
-    var img = new Image();
-
-    // データのオンロードをトリガーにする
-    img.onload = function(){
-      // テクスチャオブジェクトの生成
-      var tex = KoumeGL.gl.createTexture();
-
-      // テクスチャをバインドする
-      KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, tex );
-      KoumeGL.gl.texParameteri(gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_WRAP_S, KoumeGL.gl.CLAMP_TO_EDGE);
-      KoumeGL.gl.texParameteri(gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_WRAP_T, KoumeGL.gl.CLAMP_TO_EDGE);
-      KoumeGL.gl.texParameteri(gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_MIN_FILTER, KoumeGL.gl.NEAREST);
-      KoumeGL.gl.texParameteri(gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_MAG_FILTER, KoumeGL.gl.NEAREST);
-      KoumeGL.gl.bindTexture(gl.TEXTURE_2D, null);
-
-      KoumeGL.gl.bindTexture(gl.TEXTURE_2D, texture);
-      KoumeGL.gl.texImage2D(gl.TEXTURE_2D, 0, KoumeGL.gl.RGBA, KoumeGL.gl.RGBA, KoumeGL.gl.UNSIGNED_BYTE, video);
-
-      // テクスチャへイメージを適用
-      KoumeGL.gl.texImage2D( KoumeGL.gl.TEXTURE_2D, 0, KoumeGL.gl.RGBA, KoumeGL.gl.RGBA, KoumeGL.gl.UNSIGNED_BYTE, img );
-
-      // ミップマップを生成
-      KoumeGL.gl.generateMipmap( KoumeGL.gl.TEXTURE_2D );
-
-      // テクスチャのバインドを無効化
-      KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, null );
-
-      // 生成したテクスチャを変数に代入
-      Textures.texture[i_num] = tex;
-    };
-
-    // イメージオブジェクトのソースを指定
-    img.src = i_src;
 
   }
 

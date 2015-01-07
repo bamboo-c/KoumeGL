@@ -21,8 +21,7 @@ var KoumeGL = {
     KoumeGL.gl = KoumeGL.canvas.getContext("webgl") || KoumeGL.canvas.getContext("experimental-webgl");
 
     // 描画するモデルの数を配列で指定する
-    KoumeGL.model = [ 0,1,2,3,4,5,6,7,8 ];
-    KoumeGL.modelLength = KoumeGL.model.length;
+    KoumeGL.modelLength = 9;
 
     // 行列の初期化とか
     MatrixIdentity.init();
@@ -91,7 +90,7 @@ var KoumeGL = {
     // カメラの位置
     var eyeX = 0.0;
     var eyeY = 0.0;
-    var eyeZ = 20.0;
+    var eyeZ = 100.0;
 
     var eye = [ eyeX, eyeY, eyeZ ];
 

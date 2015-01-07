@@ -20,9 +20,6 @@ Camera.prototype = {
     // ビュー座標変換行列
     MatrixIdentity.matrix.lookAt( this._eye, this._center, this._up, MatrixIdentity.vMatrix);
 
-    // カメラとか
-
-
   },
 
 }

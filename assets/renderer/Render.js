@@ -33,6 +33,8 @@ Render.prototype = {
 
     }
 
+    KoumeGL._texture();
+
     // コンテキストの再描画
     KoumeGL.gl.flush();
 
@@ -52,15 +54,11 @@ Render.prototype = {
 
       if( this._position[i_num].process[this._count2] === "rotate" ) {
 
-        console.log("rotate");
-
         MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
 
       } else if ( this._position[i_num].process[this._count2] === "translate" ) {
 
         MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
-
-        console.log("translate");
 
       }
 
@@ -69,6 +67,7 @@ Render.prototype = {
     }
 
     this._count2 = 0;
+
     MatrixIdentity.matrix.multiply(MatrixIdentity.vpMatrix,MatrixIdentity.mMatrix, MatrixIdentity.mvpMatrix);
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
