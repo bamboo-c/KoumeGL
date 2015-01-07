@@ -62,23 +62,7 @@ var KoumeGL = {
     // canvas の深度値の初期化
     var clearDepth = 1.0;
 
-    // 環境色
-    var ambientColor = [0.1, 0.1, 0.1];
-
-    // 目線
-    var eyePositionX = 0.0;
-    var eyePositionY = 0.0;
-    var eyePositionZ = 10.0;
-
-    var eyePosition = [eyePositionX, eyePositionY, eyePositionZ];
-
-    // 原点
-    var centerPointX = 0.0;
-    var centerPointY = 0.0;
-    var centerPointZ = 0.0;
-    var centerPoint = [centerPointX, centerPointY, centerPointZ];
-
-    KoumeGL.stage = new Stage( clearColor, clearDepth, ambientColor, eyePosition, centerPoint )
+    KoumeGL.stage = new Stage( clearColor, clearDepth )
 
   },
 
@@ -90,7 +74,7 @@ var KoumeGL = {
     // カメラの位置
     var eyeX = 0.0;
     var eyeY = 0.0;
-    var eyeZ = 100.0;
+    var eyeZ = 0.0;
 
     var eye = [ eyeX, eyeY, eyeZ ];
 
@@ -108,7 +92,16 @@ var KoumeGL = {
 
     var up = [ upX, upY, upZ ];
 
-    KoumeGL.camera = new Camera( eye, center, up );
+    // 視野角
+    var angle = 45;
+
+    // 視点の距離の最小値
+    var viewMin = 0.1;
+
+    // 視点の距離の最大値
+    var viewMax = 50.0;
+
+    KoumeGL.camera = new Camera( eye, center, up, angle, viewMin, viewMax );
 
   },
 
@@ -153,6 +146,22 @@ var KoumeGL = {
   // render setting
   //-------------------------------------------
   _render : function() {
+
+    // 目線
+    var eyePositionX = 0.0;
+    var eyePositionY = 0.0;
+    var eyePositionZ = 5.0;
+
+    var eyePosition = [eyePositionX, eyePositionY, eyePositionZ];
+
+    // 原点
+    var centerPointX = 0.0;
+    var centerPointY = 0.0;
+    var centerPointZ = 0.0;
+    var centerPoint = [centerPointX, centerPointY, centerPointZ];
+
+    // 環境色
+    var ambientColor = [0.1, 0.1, 0.1];
 
     // モデルを描画する場所とかアニメーションの位置とか
     var renderSet = {
@@ -208,7 +217,7 @@ var KoumeGL = {
 
     }
 
-    KoumeGL.render = new Render( renderSet );
+    KoumeGL.render = new Render( ambientColor, eyePosition, centerPoint, renderSet );
 
   }
 

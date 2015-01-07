@@ -62,23 +62,7 @@ var KoumeGL = {
     // canvas の深度値の初期化
     var clearDepth = 1.0;
 
-    // 環境色
-    var ambientColor = [0.1, 0.1, 0.1];
-
-    // 目線
-    var eyePositionX = 0.0;
-    var eyePositionY = 0.0;
-    var eyePositionZ = 10.0;
-
-    var eyePosition = [eyePositionX, eyePositionY, eyePositionZ];
-
-    // 原点
-    var centerPointX = 0.0;
-    var centerPointY = 0.0;
-    var centerPointZ = 0.0;
-    var centerPoint = [centerPointX, centerPointY, centerPointZ];
-
-    KoumeGL.stage = new Stage( clearColor, clearDepth, ambientColor, eyePosition, centerPoint )
+    KoumeGL.stage = new Stage( clearColor, clearDepth )
 
   },
 
@@ -90,7 +74,7 @@ var KoumeGL = {
     // カメラの位置
     var eyeX = 0.0;
     var eyeY = 0.0;
-    var eyeZ = 100.0;
+    var eyeZ = 0.0;
 
     var eye = [ eyeX, eyeY, eyeZ ];
 
@@ -108,7 +92,16 @@ var KoumeGL = {
 
     var up = [ upX, upY, upZ ];
 
-    KoumeGL.camera = new Camera( eye, center, up );
+    // 視野角
+    var angle = 45;
+
+    // 視点の距離の最小値
+    var viewMin = 0.1;
+
+    // 視点の距離の最大値
+    var viewMax = 50.0;
+
+    KoumeGL.camera = new Camera( eye, center, up, angle, viewMin, viewMax );
 
   },
 
@@ -153,6 +146,22 @@ var KoumeGL = {
   // render setting
   //-------------------------------------------
   _render : function() {
+
+    // 目線
+    var eyePositionX = 0.0;
+    var eyePositionY = 0.0;
+    var eyePositionZ = 5.0;
+
+    var eyePosition = [eyePositionX, eyePositionY, eyePositionZ];
+
+    // 原点
+    var centerPointX = 0.0;
+    var centerPointY = 0.0;
+    var centerPointZ = 0.0;
+    var centerPoint = [centerPointX, centerPointY, centerPointZ];
+
+    // 環境色
+    var ambientColor = [0.1, 0.1, 0.1];
 
     // モデルを描画する場所とかアニメーションの位置とか
     var renderSet = {
@@ -208,7 +217,7 @@ var KoumeGL = {
 
     }
 
-    KoumeGL.render = new Render( renderSet );
+    KoumeGL.render = new Render( ambientColor, eyePosition, centerPoint, renderSet );
 
   }
 
@@ -1021,11 +1030,15 @@ Shader.prototype = {
 /*-----------------------------------------------------
 * Camera
 -----------------------------------------------------*/
-var Camera = function( i_eye, i_center, i_up ) {
+var Camera = function( i_eye, i_center, i_up, i_angle, i_viewMin, i_viewMax ) {
 
   this._eye = i_eye;
   this._center = i_center;
   this._up = i_up;
+  this._angle = i_angle;
+  this._viewMin = i_viewMin;
+  this._viewMax = i_viewMax;
+
 
   this._init.apply( this );
 
@@ -1040,6 +1053,12 @@ Camera.prototype = {
     // ビュー座標変換行列
     MatrixIdentity.matrix.lookAt( this._eye, this._center, this._up, MatrixIdentity.vMatrix);
 
+    // プロジェクション座標変換行列
+    MatrixIdentity.matrix.perspective( this._angle, KoumeGL.canvas.width / KoumeGL.canvas.height, this._viewMin, this._viewMax, MatrixIdentity.pMatrix );
+
+    // 各行列を掛け合わせ座標変換行列
+    MatrixIdentity.matrix.multiply( MatrixIdentity.pMatrix, MatrixIdentity.vMatrix, MatrixIdentity.vpMatrix );
+
   },
 
 }
@@ -1047,14 +1066,10 @@ Camera.prototype = {
 /*-----------------------------------------------------
 * Stage
 -----------------------------------------------------*/
-var Stage = function( i_color, i_depth, i_ambient, i_position, i_center ) {
+var Stage = function( i_color, i_depth ) {
 
   this._color = i_color;
   this._depth = i_depth;
-
-  this.ambientColor = i_ambient;
-  this.eyePosition = i_position;
-  this.centerPoint = i_center;
 
   this._init.apply( this );
 }
@@ -1074,17 +1089,6 @@ Stage.prototype = {
 
     KoumeGL.gl.clearColor( this._color[0], this._color[1], this._color[2], this._color[3] );
     KoumeGL.gl.clearDepth( this._depth );
-
-    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[3], this.ambientColor);
-    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[4], this.eyePosition);
-    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[5], this.centerPoint);
-
-
-    // プロジェクション座標変換行列
-    MatrixIdentity.matrix.perspective(45, KoumeGL.canvas.width / KoumeGL.canvas.height, 0.1, 50.0, MatrixIdentity.pMatrix);
-
-    // 各行列を掛け合わせ座標変換行列
-    MatrixIdentity.matrix.multiply( MatrixIdentity.pMatrix, MatrixIdentity.vMatrix, MatrixIdentity.vpMatrix );
 
   }
 
@@ -1175,13 +1179,36 @@ Textures.prototype = {
 }
 
 /*-----------------------------------------------------
+* TractabilityMouse
+-----------------------------------------------------*/
+var TractabilityMouse = function() {
+
+  this._init.apply( this );
+
+}
+TractabilityMouse.prototype = {
+
+  //-------------------------------------------------
+  // initialize
+  //-------------------------------------------------
+  _init : function() {
+
+  }
+
+}
+
+/*-----------------------------------------------------
 * Render
 -----------------------------------------------------*/
-var Render = function( i_data ) {
+var Render = function( i_ambient, i_position, i_center, i_data ) {
 
   this._count = 0;
   this._count2 = 0;
   this._rad = 0;
+
+  this._ambientColor = i_ambient;
+  this._eyePosition = i_position;
+  this._centerPoint = i_center;
   this._position = i_data;
 
   this._run.apply( this );
@@ -1250,32 +1277,15 @@ Render.prototype = {
     // uniformLocationへ座標変換行列を登録
     KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
     KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
-
     KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[2], lightPosition);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[3], this._ambientColor);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[4], this._eyePosition);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[5], this._centerPoint);
     KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
     KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 0);
 
     // モデルの描画
     KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
-
-  }
-
-}
-
-/*-----------------------------------------------------
-* TractabilityMouse
------------------------------------------------------*/
-var TractabilityMouse = function() {
-
-  this._init.apply( this );
-
-}
-TractabilityMouse.prototype = {
-
-  //-------------------------------------------------
-  // initialize
-  //-------------------------------------------------
-  _init : function() {
 
   }
 
