@@ -31,13 +31,7 @@ Render.prototype = {
     // canvas の色と深度値を初期化
     KoumeGL.gl.clear( KoumeGL.gl.COLOR_BUFFER_BIT | KoumeGL.gl.DEPTH_BUFFER_BIT );
 
-    for( var i = KoumeGL.modelLength -1; i >= 0; i-- ) {
-
-        this._bind(i);
-
-    }
-
-    KoumeGL._texture();
+    this._bind(i);
 
     // コンテキストの再描画
     KoumeGL.gl.flush();
@@ -51,29 +45,6 @@ Render.prototype = {
   // bind
   //-------------------------------------------------
   _bind : function( i_num ) {
-
-    MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
-
-    for( var i = this._position[i_num].digit -1; i >= 0; i-- ) {
-
-      if( this._position[i_num].process[this._count2] === "rotate" ) {
-
-        MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
-
-      } else if ( this._position[i_num].process[this._count2] === "translate" ) {
-
-        MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
-
-      }
-
-      this._count2++;
-
-    }
-
-    this._count2 = 0;
-
-    MatrixIdentity.matrix.multiply(MatrixIdentity.vpMatrix,MatrixIdentity.mMatrix, MatrixIdentity.mvpMatrix);
-    MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
     // uniformLocationへ座標変換行列を登録
     KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
