@@ -55,7 +55,7 @@ var KoumeGL = {
   _stage : function() {
 
     // canvas の色の初期化
-    var clearColor = [0.0, 0.0, 0.0, 1.0];
+    var clearColor = [0.0, 0.0, 0.0, 1];
 
     // canvas の深度値の初期化
     var clearDepth = 1.0;

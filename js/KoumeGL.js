@@ -26,12 +26,10 @@ var KoumeGL = {
     // 行列の初期化とか
     MatrixIdentity.init();
 
-
     // シェーダ
     KoumeGL.shader = new Shader();
     // Buffer
     KoumeGL.buffer = new BufferAttribute();
-
 
     // stage の設定
     KoumeGL._stage();
@@ -1179,23 +1177,17 @@ Textures.prototype = {
 }
 
 /*-----------------------------------------------------
-* TractabilityMouse
+* Models
 -----------------------------------------------------*/
-var TractabilityMouse = function() {
+var Models = function() {
 
-  this._init.apply( this );
 
-}
-TractabilityMouse.prototype = {
-
-  //-------------------------------------------------
-  // initialize
-  //-------------------------------------------------
-  _init : function() {
-
-  }
 
 }
+
+/*-----------------------------------------------------
+* Models
+-----------------------------------------------------*/
 
 /*-----------------------------------------------------
 * Render
@@ -1286,6 +1278,25 @@ Render.prototype = {
 
     // モデルの描画
     KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
+
+  }
+
+}
+
+/*-----------------------------------------------------
+* TractabilityMouse
+-----------------------------------------------------*/
+var TractabilityMouse = function() {
+
+  this._init.apply( this );
+
+}
+TractabilityMouse.prototype = {
+
+  //-------------------------------------------------
+  // initialize
+  //-------------------------------------------------
+  _init : function() {
 
   }
 

@@ -12,7 +12,7 @@ var Render = function( i_ambient, i_position, i_center, i_data ) {
   this._centerPoint = i_center;
   this._position = i_data;
 
-  this._run.apply( this );
+  this._update.apply( this );
 
 }
 Render.prototype = {
@@ -20,7 +20,7 @@ Render.prototype = {
   //-------------------------------------------------
   // run
   //-------------------------------------------------
-  _run : function() {
+  _update : function() {
 
     // カウンタのインクリメント
     this._count++;
@@ -43,7 +43,7 @@ Render.prototype = {
     KoumeGL.gl.flush();
 
     // フラグをチェックしてアニメーション
-    if( run ){ window.requestAnimationFrame( this._run.bind( this ) ); }
+    if( run ){ window.requestAnimationFrame( this._update.bind( this ) ); }
 
   },
 
