@@ -7,7 +7,7 @@ var Sprites = function() {
   this._animation;
   this._modelLength
 
-  this._run.apply( this );
+  this._init.apply( this );
 
 }
 Sprites.prototype = {
@@ -18,23 +18,17 @@ Sprites.prototype = {
   _init : function() {
 
     // テクスチャを指定
-    Texture.fromImage("kotori.jpg");
-
+    KoumeGL.textures.fromImage("lenna.jpg");
     this.update();
 
   },
 
   //-------------------------------------------------
-  // draw
+  // update
   //-------------------------------------------------
-  update : function( i_num ) {
+  update : function() {
 
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
-
-    MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
-
-    MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
-
     MatrixIdentity.matrix.multiply(MatrixIdentity.vpMatrix,MatrixIdentity.mMatrix, MatrixIdentity.mvpMatrix);
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
@@ -52,7 +46,25 @@ Sprites.prototype = {
   //-------------------------------------------------
   remove : function() {
 
+  },
+
+  //-------------------------------------------------
+  // model state
+  //-------------------------------------------------
+  state : {
+
+    rotate : function() {
+
+    },
+    translate : function() {
+
+    },
+    scale : function() {
+
+    }
+
   }
+
 
 }
 

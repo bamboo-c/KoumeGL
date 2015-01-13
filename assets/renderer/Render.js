@@ -1,16 +1,14 @@
 /*-----------------------------------------------------
 * Render
 -----------------------------------------------------*/
-var Render = function( i_ambient, i_position, i_center, i_data ) {
+var Render = function( i_ambient, i_position, i_center ) {
 
   this._count = 0;
-  this._count2 = 0;
   this._rad = 0;
 
   this._ambientColor = i_ambient;
   this._eyePosition = i_position;
   this._centerPoint = i_center;
-  this._position = i_data;
 
   this._update.apply( this );
 
@@ -31,13 +29,15 @@ Render.prototype = {
     // canvas の色と深度値を初期化
     KoumeGL.gl.clear( KoumeGL.gl.COLOR_BUFFER_BIT | KoumeGL.gl.DEPTH_BUFFER_BIT );
 
+    this.sprites = new Sprites();
+
     this._bind();
 
     // コンテキストの再描画
     KoumeGL.gl.flush();
 
     // フラグをチェックしてアニメーション
-    if( run ){ window.requestAnimationFrame( this._update.bind( this ) ); }
+    window.requestAnimationFrame( this._update.bind( this ));
 
   },
 

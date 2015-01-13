@@ -40,8 +40,10 @@ var KoumeGL = {
     // light の設定
     KoumeGL._lighting();
 
+    // texture の設定
+    KoumeGL.textures = new Textures();
+
     // 描画
-    run = true;
     KoumeGL._render();
 
     // debug
@@ -136,65 +138,13 @@ var KoumeGL = {
     // 環境色
     var ambientColor = [0.1, 0.1, 0.1];
 
-    // モデルを描画する場所とかアニメーションの位置とか
-    var renderSet = {
-
-      0 : {
-        // 実行したいプロセスの数
-        digit : 3,
-        // 実行したいプロセス
-        process : ["rotate", "translate", "rotate"],
-        // プロセスの値
-        val : [[1.0, 1.0, 2.0], [-2.0, -1.0, -1.0], [1.0, 2.0, -1.0]]
-      },
-      1 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[1.0, 1.0, 0.0], [8.0, 0.0, -3.0], [10.0, 0.0, 1.0]]
-      },
-      2 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[0.0, 1.0, 0.0], [2.0, -8.0, 0.0], [2.0, 0.0, -2.0]]
-      },
-      3 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[10.0, 1.0, 2.0], [2.0, 0.0, -1.0], [2.0, 0.0, -2.0]]
-      },
-      4 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[3.0, 1.0, 0.0], [2.0, 0.0, 12.0], [0.0, -2.0, 0.0]]
-      },
-      5 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[8.0, 1.0, 5.0], [-2.0, -3.0, -3.0], [1.0, 2.0, -1.0]]
-      },
-      6 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[10.0, 1.0, -2.0], [2.0, 6.0, -3.0], [10.0, 5.0, 4.0]]
-      },
-      7 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[3.0, 1.0, 0.0], [2.0, 2.0, -2.0], [1.0, 1.0, 5.0]]
-      },
-      8 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[3.0, 1.0, 0.0], [1.0, 2.0, -10.0], [3.0, 1.0, 5.0]]
-      }
-
-    }
-
-    KoumeGL.render = new Render( ambientColor, eyePosition, centerPoint, renderSet );
+    KoumeGL.render = new Render( ambientColor, eyePosition, centerPoint );
 
   },
 
-  // エラー
+  //-------------------------------------------
+  // error
+  //-------------------------------------------
   throwOnGLError : function( err, funcName, args ) {
 
      throw WebGLDebugUtils.glEnumToString(err) + " was caused by call to: " + funcName;
@@ -996,32 +946,6 @@ Shader.prototype = {
 
 }
 
-
-/*-----------------------------------------------------
-* Stage
------------------------------------------------------*/
-var Lighting = function( i_position ) {
-
-  Lighting._position = i_position
-
-  this._init.apply( this );
-
-}
-Lighting.prototype = {
-
-  //-------------------------------------------------
-  // initialize
-  //-------------------------------------------------
-  _init : function() {
-
-    lightPosition = Lighting._position;
-
-  }
-
-}
-
-
-
 /*-----------------------------------------------------
 * Camera
 -----------------------------------------------------*/
@@ -1091,6 +1015,32 @@ Stage.prototype = {
 
 
 /*-----------------------------------------------------
+* Stage
+-----------------------------------------------------*/
+var Lighting = function( i_position ) {
+
+  Lighting._position = i_position
+
+  this._init.apply( this );
+
+}
+Lighting.prototype = {
+
+  //-------------------------------------------------
+  // initialize
+  //-------------------------------------------------
+  _init : function() {
+
+    lightPosition = Lighting._position;
+
+  }
+
+}
+
+
+
+
+/*-----------------------------------------------------
 * Textures
 -----------------------------------------------------*/
 var Textures = function() {
@@ -1115,20 +1065,24 @@ Textures.prototype = {
     var tex = KoumeGL.gl.createTexture();
     var img = new Image();
 
+    img.onload = function(){
+
+      KoumeGL.gl.activeTexture( KoumeGL.gl.TEXTURE0 );
+      // テクスチャをバインドする
+      KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, tex );
+
+      // テクスチャへイメージを適用
+      KoumeGL.gl.texImage2D( KoumeGL.gl.TEXTURE_2D, 0, KoumeGL.gl.RGBA, KoumeGL.gl.RGBA, KoumeGL.gl.UNSIGNED_BYTE, img );
+
+      // ミップマップを生成
+      KoumeGL.gl.generateMipmap( KoumeGL.gl.TEXTURE_2D );
+
+      // テクスチャのバインドを無効化
+      KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, null );
+
+    }
+
     img.src = i_data;
-
-    KoumeGL.gl.activeTexture( KoumeGL.gl.TEXTURE0 );
-    // テクスチャをバインドする
-    KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, tex );
-
-    // テクスチャへイメージを適用
-    KoumeGL.gl.texImage2D( KoumeGL.gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img );
-
-    // ミップマップを生成
-    KoumeGL.gl.generateMipmap( KoumeGL.gl.TEXTURE_2D );
-
-    // テクスチャのバインドを無効化
-    KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, null );
 
     return tex;
 
@@ -1139,16 +1093,14 @@ Textures.prototype = {
 /*-----------------------------------------------------
 * Render
 -----------------------------------------------------*/
-var Render = function( i_ambient, i_position, i_center, i_data ) {
+var Render = function( i_ambient, i_position, i_center ) {
 
   this._count = 0;
-  this._count2 = 0;
   this._rad = 0;
 
   this._ambientColor = i_ambient;
   this._eyePosition = i_position;
   this._centerPoint = i_center;
-  this._position = i_data;
 
   this._update.apply( this );
 
@@ -1169,13 +1121,15 @@ Render.prototype = {
     // canvas の色と深度値を初期化
     KoumeGL.gl.clear( KoumeGL.gl.COLOR_BUFFER_BIT | KoumeGL.gl.DEPTH_BUFFER_BIT );
 
+    this.sprites = new Sprites();
+
     this._bind();
 
     // コンテキストの再描画
     KoumeGL.gl.flush();
 
     // フラグをチェックしてアニメーション
-    if( run ){ window.requestAnimationFrame( this._update.bind( this ) ); }
+    window.requestAnimationFrame( this._update.bind( this ));
 
   },
 
@@ -1210,7 +1164,7 @@ var Sprites = function() {
   this._animation;
   this._modelLength
 
-  this._run.apply( this );
+  this._init.apply( this );
 
 }
 Sprites.prototype = {
@@ -1221,23 +1175,17 @@ Sprites.prototype = {
   _init : function() {
 
     // テクスチャを指定
-    Texture.fromImage("kotori.jpg");
-
+    KoumeGL.textures.fromImage("lenna.jpg");
     this.update();
 
   },
 
   //-------------------------------------------------
-  // draw
+  // update
   //-------------------------------------------------
-  update : function( i_num ) {
+  update : function() {
 
     MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
-
-    MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
-
-    MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
-
     MatrixIdentity.matrix.multiply(MatrixIdentity.vpMatrix,MatrixIdentity.mMatrix, MatrixIdentity.mvpMatrix);
     MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
 
@@ -1255,7 +1203,25 @@ Sprites.prototype = {
   //-------------------------------------------------
   remove : function() {
 
+  },
+
+  //-------------------------------------------------
+  // model state
+  //-------------------------------------------------
+  state : {
+
+    rotate : function() {
+
+    },
+    translate : function() {
+
+    },
+    scale : function() {
+
+    }
+
   }
+
 
 }
 

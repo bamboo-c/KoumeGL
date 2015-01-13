@@ -40,8 +40,10 @@ var KoumeGL = {
     // light の設定
     KoumeGL._lighting();
 
+    // texture の設定
+    KoumeGL.textures = new Textures();
+
     // 描画
-    run = true;
     KoumeGL._render();
 
     // debug
@@ -136,65 +138,13 @@ var KoumeGL = {
     // 環境色
     var ambientColor = [0.1, 0.1, 0.1];
 
-    // モデルを描画する場所とかアニメーションの位置とか
-    var renderSet = {
-
-      0 : {
-        // 実行したいプロセスの数
-        digit : 3,
-        // 実行したいプロセス
-        process : ["rotate", "translate", "rotate"],
-        // プロセスの値
-        val : [[1.0, 1.0, 2.0], [-2.0, -1.0, -1.0], [1.0, 2.0, -1.0]]
-      },
-      1 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[1.0, 1.0, 0.0], [8.0, 0.0, -3.0], [10.0, 0.0, 1.0]]
-      },
-      2 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[0.0, 1.0, 0.0], [2.0, -8.0, 0.0], [2.0, 0.0, -2.0]]
-      },
-      3 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[10.0, 1.0, 2.0], [2.0, 0.0, -1.0], [2.0, 0.0, -2.0]]
-      },
-      4 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[3.0, 1.0, 0.0], [2.0, 0.0, 12.0], [0.0, -2.0, 0.0]]
-      },
-      5 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[8.0, 1.0, 5.0], [-2.0, -3.0, -3.0], [1.0, 2.0, -1.0]]
-      },
-      6 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[10.0, 1.0, -2.0], [2.0, 6.0, -3.0], [10.0, 5.0, 4.0]]
-      },
-      7 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[3.0, 1.0, 0.0], [2.0, 2.0, -2.0], [1.0, 1.0, 5.0]]
-      },
-      8 : {
-        digit : 3,
-        process : ["rotate", "translate", "rotate"],
-        val : [[3.0, 1.0, 0.0], [1.0, 2.0, -10.0], [3.0, 1.0, 5.0]]
-      }
-
-    }
-
-    KoumeGL.render = new Render( ambientColor, eyePosition, centerPoint, renderSet );
+    KoumeGL.render = new Render( ambientColor, eyePosition, centerPoint );
 
   },
 
-  // エラー
+  //-------------------------------------------
+  // error
+  //-------------------------------------------
   throwOnGLError : function( err, funcName, args ) {
 
      throw WebGLDebugUtils.glEnumToString(err) + " was caused by call to: " + funcName;
