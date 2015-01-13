@@ -20,7 +20,7 @@ var KoumeGL = {
     // webglコンテキストを取得
     KoumeGL.gl = KoumeGL.canvas.getContext("webgl") || KoumeGL.canvas.getContext("experimental-webgl");
 
-    // 描画するモデルの数を配列で指定する
+    // 描画するモデルの数を指定する
     KoumeGL.modelLength = 9;
 
     // 行列の初期化とか
@@ -40,12 +40,12 @@ var KoumeGL = {
     // light の設定
     KoumeGL._lighting();
 
-    // テクスチャの設定
-    KoumeGL._texture();
-
     // 描画
     run = true;
     KoumeGL._render();
+
+    // debug
+    ctx = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl"));
 
   },
 
@@ -55,7 +55,7 @@ var KoumeGL = {
   _stage : function() {
 
     // canvas の色の初期化
-    var clearColor = [0.0, 0.0, 0.0, 1.0];
+    var clearColor = [0.0, 0.0, 0.0, 1];
 
     // canvas の深度値の初期化
     var clearDepth = 1.0;
@@ -112,31 +112,6 @@ var KoumeGL = {
     var lightPosition = [0.0, 0.0, 0.0];
 
     KoumeGL.lighting = new Lighting( lightPosition );
-
-  },
-
-  //-------------------------------------------
-  // texture setting
-  //-------------------------------------------
-  _texture : function() {
-
-    var texLength = 1;
-
-    // 指定したいテクスチャを指定する
-    // テクスチャを適用したいモデルを配列でキーに入れとく
-    var tex = {
-      0 : video,
-      1 : video,
-      2 : video,
-      3 : video,
-      4 : video,
-      5 : video,
-      6 : video,
-      7 : video,
-      8 : video
-    };
-
-    KoumeGL.texture = new Textures( tex, texLength );
 
   },
 
@@ -216,6 +191,13 @@ var KoumeGL = {
     }
 
     KoumeGL.render = new Render( ambientColor, eyePosition, centerPoint, renderSet );
+
+  },
+
+  // エラー
+  throwOnGLError : function( err, funcName, args ) {
+
+     throw WebGLDebugUtils.glEnumToString(err) + " was caused by call to: " + funcName;
 
   }
 
@@ -725,8 +707,6 @@ function hsva(h, s, v, a){
 -----------------------------------------------------*/
 var BufferAttribute = function() {
 
-  this._attLocation;
-  this._attStride;
   this.uniLocation
   this._vbo
   this._ibo
@@ -750,9 +730,6 @@ BufferAttribute.prototype = {
   _init : function() {
 
     this._getAttribute();
-    this._getUniform();
-    this._bindVbo();
-    this._bindIbo();
 
   },
 
@@ -762,19 +739,18 @@ BufferAttribute.prototype = {
   _getAttribute : function() {
 
     // attributeLocationの取得
-    this._attLocation = [];
-
-    this._attLocation[0] = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "position");
-    this._attLocation[1] = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "normal");
-    this._attLocation[2] = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "color");
-    this._attLocation[3] = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "texCoord");
+    this._attLocationPosition = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "position");
+    this._attLocationNormal = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "normal");
+    this._attLocationColor = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "color");
+    this._attLocationTexCoord = KoumeGL.gl.getAttribLocation(KoumeGL.shader.prg, "texCoord");
 
     // attributeの要素数
-    this._attStride = [];
-    this._attStride[0] = 3;
-    this._attStride[1] = 3;
-    this._attStride[2] = 4;
-    this._attStride[3] = 2;
+    this._attStridePosition = 3;
+    this._attStrideNormal = 3;
+    this._attStrideColor = 4;
+    this._attStrideTexCoord = 2;
+
+    this._getUniform();
 
   },
 
@@ -784,39 +760,56 @@ BufferAttribute.prototype = {
   _getUniform : function() {
 
     // uniformLocationの取得
-    this.uniLocation = [];
-    this.uniLocation[0] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "mvpMatrix");
-    this.uniLocation[1] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "invMatrix");
-    this.uniLocation[2] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "lightPosition");
-    this.uniLocation[3] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "ambientColor");
-    this.uniLocation[4] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "eyePosition");
-    this.uniLocation[5] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "centerPoint");
-    this.uniLocation[6] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "mMatrix");
-    this.uniLocation[7] = KoumeGL.gl.getUniformLocation(KoumeGL.shader.prg, "textureUnit");
+    this.uniLocationMvpMatrix = KoumeGL.gl.getUniformLocation( KoumeGL.shader.prg, "mvpMatrix" );
+    this.uniLocationInvMatrix = KoumeGL.gl.getUniformLocation( KoumeGL.shader.prg, "invMatrix" );
+    this.uniLocationLightPosition = KoumeGL.gl.getUniformLocation( KoumeGL.shader.prg, "lightPosition" );
+    this.uniLocationAmbientColor = KoumeGL.gl.getUniformLocation( KoumeGL.shader.prg, "ambientColor" );
+    this.uniLocationEyePosition = KoumeGL.gl.getUniformLocation( KoumeGL.shader.prg, "eyePosition" );
+    this.uniLocationCenterPoint = KoumeGL.gl.getUniformLocation( KoumeGL.shader.prg, "centerPoint" );
+    this.uniLocationMMatrix = KoumeGL.gl.getUniformLocation( KoumeGL.shader.prg, "mMatrix" );
+    this.uniLocationTextureUnit = KoumeGL.gl.getUniformLocation( KoumeGL.shader.prg, "textureUnit" );
+
+    this._bindVbo();
+    this._bindIbo();
 
   },
 
   //-------------------------------------------------
-  // set AttributeLocation
+  // bind VBO
   //-------------------------------------------------
-  _setAttribute : function( i_vbo, i_attL, i_attS ) {
+  _bindVbo : function() {
 
-    // 引数として受け取った配列を処理する
-    for( var i in i_vbo ){
-      // バッファをバインドする
-      KoumeGL.gl.bindBuffer( KoumeGL.gl.ARRAY_BUFFER, i_vbo[i] );
+    // VBOのバインドと登録
+    this._attVBOvPosition = this._createVbo( MatrixIdentity.vPosition );
+    KoumeGL.gl.bindBuffer( KoumeGL.gl.ARRAY_BUFFER, this._attVBOvPosition  );
+    KoumeGL.gl.enableVertexAttribArray( this._attLocationPosition );
+    KoumeGL.gl.vertexAttribPointer( this._attLocationPosition, this._attStridePosition, KoumeGL.gl.FLOAT, false, 0, 0 );
 
-      // attributeLocationを有効にする
-      KoumeGL.gl.enableVertexAttribArray( i_attL[i] );
+    this._attVBOvNormal = this._createVbo( MatrixIdentity.vNormal );
+    KoumeGL.gl.bindBuffer( KoumeGL.gl.ARRAY_BUFFER, this._attVBOvNormal  );
+    KoumeGL.gl.enableVertexAttribArray( this._attLocationNormal );
+    KoumeGL.gl.vertexAttribPointer( this._attLocationNormal, this._attStrideNormal, KoumeGL.gl.FLOAT, false, 0, 0 );
 
-      // attributeLocationを通知し登録する
-      KoumeGL.gl.vertexAttribPointer( i_attL[i], i_attS[i], KoumeGL.gl.FLOAT, false, 0, 0 );
-    }
+    this._attVBOvColor = this._createVbo( MatrixIdentity.vColor );
+    KoumeGL.gl.bindBuffer( KoumeGL.gl.ARRAY_BUFFER, this._attVBOvColor  );
+    KoumeGL.gl.enableVertexAttribArray( this._attLocationColor );
+    KoumeGL.gl.vertexAttribPointer( this._attLocationColor, this._attStrideColor, KoumeGL.gl.FLOAT, false, 0, 0 );
+
+    this._attVBOvTexCoord = this._createVbo( MatrixIdentity.vTexCoord );
+    KoumeGL.gl.bindBuffer( KoumeGL.gl.ARRAY_BUFFER, this._attVBOvTexCoord  );
+    KoumeGL.gl.enableVertexAttribArray( this._attLocationTexCoord );
+    KoumeGL.gl.vertexAttribPointer( this._attLocationTexCoord, this._attStrideTexCoord, KoumeGL.gl.FLOAT, false, 0, 0 );
+
+    // VBOの生成
+    this._vbo = this._createVbo( MatrixIdentity.index );
+
+    // VBOをバインド
+    KoumeGL.gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo );
 
   },
 
   //-------------------------------------------
-  // create vbo
+  // create VBO
   //-------------------------------------------
   _createVbo : function( i_data ) {
 
@@ -837,8 +830,21 @@ BufferAttribute.prototype = {
 
   },
 
+  //-------------------------------------------------
+  // bind IBO
+  //-------------------------------------------------
+  _bindIbo : function() {
+
+    // IBOの生成
+    this._ibo = this._createIbo( MatrixIdentity.index );
+
+    // IBOをバインド
+    KoumeGL.gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo );
+
+  },
+
   //-------------------------------------------
-  // create ibo
+  // create IBO
   //-------------------------------------------
   _createIbo : function( i_data ){
 
@@ -856,41 +862,6 @@ BufferAttribute.prototype = {
 
     // 生成したIBOを返して終了
     return this._ibo;
-
-  },
-
-  //-------------------------------------------------
-  // bind VBO
-  //-------------------------------------------------
-  _bindVbo : function() {
-
-    this._attVBO = [];
-    this._attVBO[0] = this._createVbo( MatrixIdentity.vPosition );
-    this._attVBO[1] = this._createVbo( MatrixIdentity.vNormal );
-    this._attVBO[2] = this._createVbo( MatrixIdentity.vColor );
-    this._attVBO[3] = this._createVbo( MatrixIdentity.vTexCoord );
-
-    // VBOのバインドと登録
-    this._setAttribute( this._attVBO, this._attLocation, this._attStride);
-
-    // VBOの生成
-    this._vbo = this._createVbo( MatrixIdentity.index );
-
-    // VBOをバインド
-    KoumeGL.gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo );
-
-  },
-
-  //-------------------------------------------------
-  // bind IBO
-  //-------------------------------------------------
-  _bindIbo : function() {
-
-    // IBOの生成
-    this._ibo = this._createIbo( MatrixIdentity.index );
-
-    // IBOをバインド
-    KoumeGL.gl.bindBuffer( KoumeGL.gl.ELEMENT_ARRAY_BUFFER, this._ibo );
 
   }
 
@@ -1025,6 +996,32 @@ Shader.prototype = {
 
 }
 
+
+/*-----------------------------------------------------
+* Stage
+-----------------------------------------------------*/
+var Lighting = function( i_position ) {
+
+  Lighting._position = i_position
+
+  this._init.apply( this );
+
+}
+Lighting.prototype = {
+
+  //-------------------------------------------------
+  // initialize
+  //-------------------------------------------------
+  _init : function() {
+
+    lightPosition = Lighting._position;
+
+  }
+
+}
+
+
+
 /*-----------------------------------------------------
 * Camera
 -----------------------------------------------------*/
@@ -1094,38 +1091,9 @@ Stage.prototype = {
 
 
 /*-----------------------------------------------------
-* Stage
------------------------------------------------------*/
-var Lighting = function( i_position ) {
-
-  Lighting._position = i_position
-
-  this._init.apply( this );
-
-}
-Lighting.prototype = {
-
-  //-------------------------------------------------
-  // initialize
-  //-------------------------------------------------
-  _init : function() {
-
-    lightPosition = Lighting._position;
-
-  }
-
-}
-
-
-
-
-/*-----------------------------------------------------
 * Textures
 -----------------------------------------------------*/
-var Textures = function( i_data, i_length ) {
-
-  this._src = i_data;
-  this._length = i_length;
+var Textures = function() {
 
   this._init.apply( this );
 
@@ -1137,57 +1105,36 @@ Textures.prototype = {
   //-------------------------------------------------
   _init : function() {
 
-    this._createTex();
-
   },
 
   //-------------------------------------------------
-  // create texture
+  // image texture
   //-------------------------------------------------
-  _createTex : function() {
+  fromImage : function( i_data ) {
 
-    var constant = 33984;
     var tex = KoumeGL.gl.createTexture();
+    var img = new Image();
 
-    // テクスチャをアクティブにする
-    for( var i = this._length - 1; i >= 0; i-- ) {
+    img.src = i_data;
 
-      KoumeGL.gl.activeTexture( constant + i );
-
-    }
-
+    KoumeGL.gl.activeTexture( KoumeGL.gl.TEXTURE0 );
     // テクスチャをバインドする
-    for( var i = KoumeGL.modelLength -1; i >= 0; i-- ) {
+    KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, tex );
 
-      KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, tex );
+    // テクスチャへイメージを適用
+    KoumeGL.gl.texImage2D( KoumeGL.gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img );
 
-    }
-
-    // テクスチャを適用
-    KoumeGL.gl.pixelStorei( KoumeGL.gl.UNPACK_FLIP_Y_WEBGL, true );
-    KoumeGL.gl.texImage2D( KoumeGL.gl.TEXTURE_2D, 0, KoumeGL.gl.RGBA, KoumeGL.gl.RGBA,KoumeGL.gl.UNSIGNED_BYTE, video );
-
-    KoumeGL.gl.texParameteri( KoumeGL.gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_MAG_FILTER, KoumeGL.gl.LINEAR );
-    KoumeGL.gl.texParameteri( KoumeGL.gl.TEXTURE_2D, KoumeGL.gl.TEXTURE_MIN_FILTER, KoumeGL.gl.LINEAR_MIPMAP_NEAREST );
+    // ミップマップを生成
     KoumeGL.gl.generateMipmap( KoumeGL.gl.TEXTURE_2D );
+
+    // テクスチャのバインドを無効化
     KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, null );
+
+    return tex;
 
   }
 
 }
-
-/*-----------------------------------------------------
-* Models
------------------------------------------------------*/
-var Models = function() {
-
-
-
-}
-
-/*-----------------------------------------------------
-* Models
------------------------------------------------------*/
 
 /*-----------------------------------------------------
 * Render
@@ -1203,15 +1150,15 @@ var Render = function( i_ambient, i_position, i_center, i_data ) {
   this._centerPoint = i_center;
   this._position = i_data;
 
-  this._run.apply( this );
+  this._update.apply( this );
 
 }
 Render.prototype = {
 
   //-------------------------------------------------
-  // run
+  // update
   //-------------------------------------------------
-  _run : function() {
+  _update : function() {
 
     // カウンタのインクリメント
     this._count++;
@@ -1222,59 +1169,30 @@ Render.prototype = {
     // canvas の色と深度値を初期化
     KoumeGL.gl.clear( KoumeGL.gl.COLOR_BUFFER_BIT | KoumeGL.gl.DEPTH_BUFFER_BIT );
 
-    for( var i = KoumeGL.modelLength -1; i >= 0; i-- ) {
-
-        this._bind(i);
-
-    }
-
-    KoumeGL._texture();
+    this._bind();
 
     // コンテキストの再描画
     KoumeGL.gl.flush();
 
     // フラグをチェックしてアニメーション
-    if( run ){ window.requestAnimationFrame( this._run.bind( this ) ); }
+    if( run ){ window.requestAnimationFrame( this._update.bind( this ) ); }
 
   },
 
   //-------------------------------------------------
   // bind
   //-------------------------------------------------
-  _bind : function( i_num ) {
-
-    MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
-
-    for( var i = this._position[i_num].digit -1; i >= 0; i-- ) {
-
-      if( this._position[i_num].process[this._count2] === "rotate" ) {
-
-        MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
-
-      } else if ( this._position[i_num].process[this._count2] === "translate" ) {
-
-        MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
-
-      }
-
-      this._count2++;
-
-    }
-
-    this._count2 = 0;
-
-    MatrixIdentity.matrix.multiply(MatrixIdentity.vpMatrix,MatrixIdentity.mMatrix, MatrixIdentity.mvpMatrix);
-    MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
+  _bind : function() {
 
     // uniformLocationへ座標変換行列を登録
-    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[0], false, MatrixIdentity.mvpMatrix);
-    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[1], false, MatrixIdentity.invMatrix);
-    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[2], lightPosition);
-    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[3], this._ambientColor);
-    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[4], this._eyePosition);
-    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocation[5], this._centerPoint);
-    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocation[6], false, MatrixIdentity.mMatrix);
-    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocation[7], 0);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocationMvpMatrix, false, MatrixIdentity.mvpMatrix);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocationInvMatrix, false, MatrixIdentity.invMatrix);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocationLightPosition, lightPosition);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocationAmbientColor, this._ambientColor);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocationEyePosition, this._eyePosition);
+    KoumeGL.gl.uniform3fv(KoumeGL.buffer.uniLocationCenterPoint, this._centerPoint);
+    KoumeGL.gl.uniformMatrix4fv(KoumeGL.buffer.uniLocationMMatrix, false, MatrixIdentity.mMatrix);
+    KoumeGL.gl.uniform1i(KoumeGL.buffer.uniLocationTextureUnit, 0);
 
     // モデルの描画
     KoumeGL.gl.drawElements(KoumeGL.gl.TRIANGLES, MatrixIdentity.index.length, KoumeGL.gl.UNSIGNED_SHORT, 0);
@@ -1282,6 +1200,68 @@ Render.prototype = {
   }
 
 }
+
+/*-----------------------------------------------------
+* Sprites
+-----------------------------------------------------*/
+var Sprites = function() {
+
+  this._texture;
+  this._animation;
+  this._modelLength
+
+  this._run.apply( this );
+
+}
+Sprites.prototype = {
+
+  //-------------------------------------------------
+  // initialize
+  //-------------------------------------------------
+  _init : function() {
+
+    // テクスチャを指定
+    Texture.fromImage("kotori.jpg");
+
+    this.update();
+
+  },
+
+  //-------------------------------------------------
+  // draw
+  //-------------------------------------------------
+  update : function( i_num ) {
+
+    MatrixIdentity.matrix.identity(MatrixIdentity.mMatrix);
+
+    MatrixIdentity.matrix.rotate( MatrixIdentity.mMatrix, this._rad, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
+
+    MatrixIdentity.matrix.translate( MatrixIdentity.mMatrix, this._position[i_num].val[this._count2], MatrixIdentity.mMatrix);
+
+    MatrixIdentity.matrix.multiply(MatrixIdentity.vpMatrix,MatrixIdentity.mMatrix, MatrixIdentity.mvpMatrix);
+    MatrixIdentity.matrix.inverse(MatrixIdentity.mMatrix, MatrixIdentity.invMatrix);
+
+  },
+
+  //-------------------------------------------------
+  // add model
+  //-------------------------------------------------
+  add : function() {
+
+  },
+
+  //-------------------------------------------------
+  // remove model
+  //-------------------------------------------------
+  remove : function() {
+
+  }
+
+}
+
+/*-----------------------------------------------------
+* Sprites
+-----------------------------------------------------*/
 
 /*-----------------------------------------------------
 * TractabilityMouse

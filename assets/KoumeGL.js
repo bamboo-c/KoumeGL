@@ -20,7 +20,7 @@ var KoumeGL = {
     // webglコンテキストを取得
     KoumeGL.gl = KoumeGL.canvas.getContext("webgl") || KoumeGL.canvas.getContext("experimental-webgl");
 
-    // 描画するモデルの数を配列で指定する
+    // 描画するモデルの数を指定する
     KoumeGL.modelLength = 9;
 
     // 行列の初期化とか
@@ -40,12 +40,12 @@ var KoumeGL = {
     // light の設定
     KoumeGL._lighting();
 
-    // テクスチャの設定
-    KoumeGL._texture();
-
     // 描画
     run = true;
     KoumeGL._render();
+
+    // debug
+    ctx = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl"));
 
   },
 
@@ -112,31 +112,6 @@ var KoumeGL = {
     var lightPosition = [0.0, 0.0, 0.0];
 
     KoumeGL.lighting = new Lighting( lightPosition );
-
-  },
-
-  //-------------------------------------------
-  // texture setting
-  //-------------------------------------------
-  _texture : function() {
-
-    var texLength = 1;
-
-    // 指定したいテクスチャを指定する
-    // テクスチャを適用したいモデルを配列でキーに入れとく
-    var tex = {
-      0 : video,
-      1 : video,
-      2 : video,
-      3 : video,
-      4 : video,
-      5 : video,
-      6 : video,
-      7 : video,
-      8 : video
-    };
-
-    KoumeGL.texture = new Textures( tex, texLength );
 
   },
 
@@ -216,6 +191,13 @@ var KoumeGL = {
     }
 
     KoumeGL.render = new Render( ambientColor, eyePosition, centerPoint, renderSet );
+
+  },
+
+  // エラー
+  throwOnGLError : function( err, funcName, args ) {
+
+     throw WebGLDebugUtils.glEnumToString(err) + " was caused by call to: " + funcName;
 
   }
 

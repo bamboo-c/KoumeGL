@@ -68,21 +68,7 @@
         gl_FragColor = vec4(vColor.rgb * texColor * diff + spec + ambientColor, vColor.a);
       }
 		</script>
-    <script>
-      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || window.navigator.mozGetUserMedia;
-
-      var video = document.getElementById("face");
-
-      navigator.getUserMedia({video: true, audio: false},
-       function(stream) {
-        video.src = window.URL.createObjectURL(stream);
-       },
-       function(err) {
-        console.log(err);
-       }
-      );
-    </script>
-		<script src="js/KoumeGL.js"></script>
     <script src="js/webgl-debug.js"></script>
+		<script src="js/KoumeGL.js"></script>
 	</body>
 </html>

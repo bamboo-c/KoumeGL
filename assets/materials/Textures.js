@@ -1,10 +1,7 @@
 /*-----------------------------------------------------
 * Textures
 -----------------------------------------------------*/
-var Textures = function( i_data, i_length ) {
-
-  this._src = i_data;
-  this._length = i_length;
+var Textures = function() {
 
   this._init.apply( this );
 
@@ -16,14 +13,33 @@ Textures.prototype = {
   //-------------------------------------------------
   _init : function() {
 
-    this._createTex();
-
   },
 
   //-------------------------------------------------
-  // create texture
+  // image texture
   //-------------------------------------------------
-  _createTex : function() {
+  fromImage : function( i_data ) {
 
+    var tex = KoumeGL.gl.createTexture();
+    var img = new Image();
+
+    img.src = i_data;
+
+    KoumeGL.gl.activeTexture( KoumeGL.gl.TEXTURE0 );
+    // テクスチャをバインドする
+    KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, tex );
+
+    // テクスチャへイメージを適用
+    KoumeGL.gl.texImage2D( KoumeGL.gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img );
+
+    // ミップマップを生成
+    KoumeGL.gl.generateMipmap( KoumeGL.gl.TEXTURE_2D );
+
+    // テクスチャのバインドを無効化
+    KoumeGL.gl.bindTexture( KoumeGL.gl.TEXTURE_2D, null );
+
+    return tex;
+
+  }
 
 }
